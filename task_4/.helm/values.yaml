@@ -1,0 +1,20 @@
+image: registry.slurm.io/s057048/k8s_dev_cert_project/
+imageTag: master.1
+imagePullSecret: app-gitlab-registry
+
+replicas: 2
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 200m
+    memory: 256Mi
+
+service:
+  app_port: 5000
+  port: 80
+
+ingress:
+  host: flask.s057048.edu.slurm.io

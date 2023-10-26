@@ -1,0 +1,11 @@
+apiVersion: v1
+description: Cert
+home: https://slurm.io/
+maintainers:
+- email: 'Ваш email'
+  name: 'Ваше имя'
+name: app
+sources:
+- flask.s'Ваш номер студента'.edu.slurm.io
+version: 1.0.0
+

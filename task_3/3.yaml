@@ -1,0 +1,210 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: configmap1
+data:
+  default.conf: |
+    server {
+	listen       80 default_server;
+        server_name  _;
+        default_type text/plain;
+
+        location / {
+            return 200 'I am 1.21\n';
+        }
+    }
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: configmap2
+data:
+  default.conf: |
+    server {
+	listen       80 default_server;
+        server_name  _;
+        default_type text/plain;
+
+        location / {
+            return 200 'I am 1.22\n';
+        }
+    }
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-test
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  rules:
+  - host: ingress-test.s'Ваш_номер_студента'.edu.slurm.io
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/1"
+        backend:
+          service:
+            name: ingress-test-1
+            port:
+              number: 80
+  - host: ingress-test.s'Ваш_номер_студента'.edu.slurm.io
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/2"
+        backend:
+          service:
+            name: ingress-test-2
+            port:
+              number: 80
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ingress-test-1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ingress-test-1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: ingress-test-1
+    spec:
+      containers:
+      - image: nginx:1.21
+        name: ingress-test-1
+        ports:
+        - containerPort: 80
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /
+            port: 80
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /
+            port: 80
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+          initialDelaySeconds: 10
+
+        resources:
+          requests:
+            cpu: 10m
+            memory: 100Mi
+          limits:
+            cpu: 10m
+            memory: 100Mi
+        volumeMounts:
+        - name: config
+          mountPath: /etc/nginx/conf.d/
+      volumes:
+      - name: config
+        configMap:
+          name: configmap1
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ingress-test-2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ingress-test-2
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: ingress-test-2
+    spec:
+      containers:
+      - image: nginx:1.22
+        name: ingress-test-2
+        ports:
+        - containerPort: 80
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /
+            port: 80
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /
+            port: 80
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+          initialDelaySeconds: 10
+
+        resources:
+          requests:
+            cpu: 10m
+            memory: 100Mi
+          limits:
+            cpu: 10m
+            memory: 100Mi
+        volumeMounts:
+        - name: config
+          mountPath: /etc/nginx/conf.d/
+      volumes:
+      - name: config
+        configMap:
+          name: configmap2
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: ingress-test-2
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    app: ingress-test-2
+  type: NodePort
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: ingress-test-1
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    app: ingress-test-1
+  type: ClusterIP
