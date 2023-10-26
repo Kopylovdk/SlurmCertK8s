@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: configmap2
+data:
+  default.conf: |
+    server {
+	listen       80 default_server;
+        server_name  _;
+        default_type text/plain;
+
+        location / {
+            return 200 'I am 1.22\n';
+        }
+    }
+

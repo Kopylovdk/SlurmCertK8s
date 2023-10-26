@@ -34,13 +34,16 @@ nano /srv/slurm/deployment-test.log
 ![cronjob.png](img/cronjob.png)
 
 ## Task_3 - набор манифестов (deployment, ingress, service (NodePort, ClusterIP), configmap, )
-Изменить 'Ваш_номер_студента' на Ваш номер. Убедиться что задание совпадает.
+В папке [separated_manifests](task_3%2Fseparated_manifests) все то же самое что и в файле [3.yaml](task_3%2F3.yaml), только раздельно.<br>
+В файле [3.yaml](task_3%2F3.yaml) в Ingress изменить 'Ваш_номер_студента' на Ваш номер. <br>
+Убедиться что задание совпадает.
 
 К сожалению, скрин с этим заданием не сохранился.
 
 Смысл задания в том, что curl по определенным url должен выдать разные сообщения
  curl ingress-test.s'ваш номер студента'.edu.slurm.io/1    ->    I am 1.21
  curl ingress-test.s'ваш номер студента'.edu.slurm.io/2    ->    I am 1.22
+
 
 ### Task_4 - Деплой приложения
 Самое интересное.<br>

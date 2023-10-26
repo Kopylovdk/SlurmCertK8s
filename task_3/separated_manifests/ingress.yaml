@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-test
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  rules:
+  - host: ingress-test.s'Ваш_номер_студента'.edu.slurm.io
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/1"
+        backend:
+          service:
+            name: ingress-test-1
+            port:
+              number: 80
+  - host: ingress-test.s'Ваш_номер_студента'.edu.slurm.io
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/2"
+        backend:
+          service:
+            name: ingress-test-2
+            port:
+              number: 80
